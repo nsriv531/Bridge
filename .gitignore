@@ -1,0 +1,9 @@
+# Java
+java-service/target/
+
+# C++
+cpp-engine/build/
+
+# OS
+.DS_Store
+Thumbs.db
