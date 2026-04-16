@@ -75,14 +75,6 @@ cmake --build build
 
 Use Maven in `java-service/` after building the engine and ensuring `app.engine.path` points to the compiled binary.
 
-## Why this project is compelling
-
-- cross-language system design
-- orchestration vs execution boundaries
-- async job lifecycle management
-- platform-style API thinking
-- a credible path toward production architecture
-
 ## Suggested next steps
 
 - replace process execution with gRPC
