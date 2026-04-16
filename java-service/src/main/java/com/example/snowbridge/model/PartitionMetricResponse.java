@@ -5,6 +5,8 @@ public class PartitionMetricResponse {
     private long effectiveRows;
     private double partitionCost;
     private double latencyRisk;
+    private double memoryPressure;
+    private double hotspotRatio;
 
     public int getPartitionId() {
         return partitionId;
@@ -36,5 +38,21 @@ public class PartitionMetricResponse {
 
     public void setLatencyRisk(double latencyRisk) {
         this.latencyRisk = latencyRisk;
+    }
+
+    public double getMemoryPressure() {
+        return memoryPressure;
+    }
+
+    public void setMemoryPressure(double memoryPressure) {
+        this.memoryPressure = memoryPressure;
+    }
+
+    public double getHotspotRatio() {
+        return hotspotRatio;
+    }
+
+    public void setHotspotRatio(double hotspotRatio) {
+        this.hotspotRatio = hotspotRatio;
     }
 }

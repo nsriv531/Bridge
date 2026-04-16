@@ -1,34 +1,74 @@
 # Architecture Notes
 
-## Goal
+## Current platform shape
 
-This project is intentionally designed to resemble the split used in data infrastructure companies.
+Glacier is now structured like a small control-plane / compute-plane platform rather than a single request-response demo.
 
-- The **Java layer** behaves like a control plane service.
-- The **C++ layer** behaves like a compute engine.
+- The **Java layer** acts as the control plane.
+- The **C++ layer** acts as the compute engine.
+- The control plane now supports both **synchronous analysis** and **asynchronous job orchestration**.
+- Job execution history is tracked in-memory behind a repository abstraction so it can later be swapped for Redis, Postgres, or a queue-backed worker model.
 
-## Why this matters
+## What the upgraded version now demonstrates
 
-Typical enterprise apps often stop at REST + database.
-This project shows a stronger systems angle:
+### Control plane responsibilities
 
-- API receives workload metadata
-- orchestration layer validates and coordinates execution
-- compute engine focuses on performance-sensitive scoring logic
-- results are returned in a platform-friendly JSON format
+- Request validation
+- Job submission and tracking
+- Async execution using a worker pool
+- History and summary endpoints
+- Process boundary integration with the native engine
+- Error handling suitable for API consumers
 
-## Suggested talking points in interviews
+### Compute plane responsibilities
 
-1. Why did you separate Java and C++?
-   - Java is productive for API and service orchestration.
-   - C++ is strong for performance-sensitive compute logic.
+- Partition-level workload simulation
+- Runtime and risk estimation
+- SLA-aware recommendations
+- Bottleneck classification
+- Scaling guidance through recommended worker counts
 
-2. Why not keep it all in Java?
-   - Separation better mirrors real platform architecture and lets the compute layer evolve independently.
+## New API capabilities
 
-3. What would you improve in production?
-   - gRPC instead of shell execution
-   - async jobs and durable queues
-   - workload history persistence
-   - containerized deployment
-   - observability and tracing
+### Synchronous
+
+- `POST /api/v1/workloads/analyze`
+
+Returns the native engine result immediately.
+
+### Asynchronous
+
+- `POST /api/v1/workloads/submit`
+- `GET /api/v1/workloads/{jobId}`
+- `GET /api/v1/workloads/history`
+- `GET /api/v1/workloads/summary`
+
+These endpoints make the project feel much closer to a real orchestration service.
+
+## Why this is stronger for interviews
+
+This version tells a better distributed-systems story:
+
+1. **Separation of concerns**
+   - Java owns orchestration and service behavior.
+   - C++ owns performance-sensitive scoring logic.
+
+2. **Evolution path is obvious**
+   - Replace shell execution with gRPC.
+   - Replace in-memory job tracking with Redis/Postgres.
+   - Replace local worker pool with queue-driven background workers.
+
+3. **The workload model is richer**
+   - Workload type awareness: `BATCH`, `STREAMING`, `INTERACTIVE`
+   - Priority awareness: `LOW`, `NORMAL`, `HIGH`, `CRITICAL`
+   - Optional SLA target evaluation
+   - Partition memory pressure and hotspot metrics
+
+## Good production next steps
+
+- gRPC between Java and C++
+- persistent job state
+- durable queue for async execution
+- metrics / tracing
+- authentication and rate limiting
+- Dockerized local environment
